@@ -1,1 +1,34 @@
- 
+ name: Build APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          # Usa JDK 11 si tu proyecto es antiguo (Gradle 6.x)
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: |
+          # Construye el APK en modo debug (no requiere firma)
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: webview-app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk  # Ruta para APK debug
