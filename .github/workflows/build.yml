@@ -1,4 +1,4 @@
-name: Android CI
+name: Android Build
 
 on:
   push:
@@ -23,15 +23,31 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    # Instala Gradle (para generar el wrapper)
+    - name: Install Gradle
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gradle
 
+    # Genera el Gradle Wrapper (usando la versión compatible con tu proyecto)
+    - name: Generate Gradle Wrapper
+      run: |
+        gradle wrapper --gradle-version 8.4 --distribution-type bin
+        chmod +x gradlew
+
+    # Verifica que el wrapper se generó correctamente
+    - name: List generated files
+      run: |
+        ls -la
+        ls -la gradle/wrapper/
+
+    # Compila el proyecto Android
     - name: Build with Gradle
       run: ./gradlew build
 
+    # (Opcional) Sube el APK como artefacto
     - name: Upload APK
-      if: github.ref == 'refs/heads/main'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
-        name: app
+        name: app-release
         path: app/build/outputs/apk/**/*.apk
