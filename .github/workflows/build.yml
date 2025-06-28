@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew assembleRelease
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: webview-app
           path: app/build/outputs/apk/release/app-release-unsigned.apk
